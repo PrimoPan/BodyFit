@@ -1,12 +1,14 @@
 let video;
 //视频
 let pose;
+let preX,preY;
 //存放身体坐标信息
 let skeleton;
 let bird;
 let handpose;
 let arrow;
 let St;
+let B01,B02;
 let predictions=[];
 
 modelLoaded=()=>
@@ -70,7 +72,9 @@ let fog = [fog1, fog2, fog3]; //fog assets
 //preloading png files
 function preload() { //open preload
     arrow=loadImage('./arrow.webp')
-    St=loadImage("./start.png")
+    St=loadImage("./st.png")
+    B01=loadImage("./b03.png")
+    B02=loadImage("./b02.png")
     console.log(arrow)
     texture = loadImage('https://openprocessing-usercontent.s3.amazonaws.com/files/user237173/visual992149/hd09f8b6836fc950ad871f8806cfda627/BG.png');
     fg[0] = loadImage('https://openprocessing-usercontent.s3.amazonaws.com/files/user237173/visual994970/h55771969c746baea79cf3d0f6aa1787e/FG1.png');
@@ -179,96 +183,132 @@ function setup() { //open setup
 } //close setup
 
 function draw() { //open draw
+    console.log(frameCount)
     background(texture);
     //background(255);
-    if (frameCount>=300)
-    {
-        image(St,300,900);
-    }
-    if (predictions[0])
-    {
-       // console.log(predictions);
-        let anno=predictions[0].annotations;
-       // console.log(anno);
-        let X=anno.indexFinger[3][0];
-        let Y=anno.indexFinger[3][1];
-        X=(X/video.width)*W;
-        Y=(Y/video.height)*H;
-        X=W-X;
-        console.log(video.width)
-        console.log(X," ",Y)
-        image(arrow,X,Y,50,50)
-    }
-    //create a new BGround object every 1600 frames and add it to the BGrounds array
-    if (frameCount%1600 == 0) {
-        let BGround1 = new BGround(1200);
-        append(BGrounds, BGround1);
-    }
 
-    //create a new MGround object every 500 frames and add it to the MGrounds array
-    if (frameCount%500 == 0) {
-        let MGround1 = new MGround(1200);
-        append(MGrounds, MGround1);
-    }
+    if (frameCount>=276) {
+      if (frameCount<=340)
+       {
+           tint(255,(frameCount-276)*4);
+       }
+      else{
+          let xw=St.width;
+          let xh=St.height;
+          xw/=2;
+          xh/=2;
+          image(St,W/2-xw/2,H*0.75,xw,xh)
+      }
+      //  else notint();
 
-    //create new midground bird sprite every 900 frames
-    if (frameCount%900 == 0) {
-        midgroundBird();
-    }
+        //create a new BGround object every 1600 frames and add it to the BGrounds array
+        if (frameCount % 1600 == 0) {
+            let BGround1 = new BGround(1200);
+            append(BGrounds, BGround1);
+        }
 
-    //create a new MG_fog object every 800 frames and add it to the MG_fogs array
-    if (frameCount%900 == 0) {
-        let MG_fog1 = new MG_fog(1200, random(-100, -200));
-        append(MG_fogs, MG_fog1);
-    }
+        //create a new MGround object every 500 frames and add it to the MGrounds array
+        if (frameCount % 500 == 0) {
+            let MGround1 = new MGround(1200);
+            append(MGrounds, MGround1);
+        }
 
-    //create a new FGround object every 400 frames and add it to the FGrounds array
-    if (frameCount%400 == 0) {
-        let FGround1 = new FGround(1200);
-        append(FGrounds, FGround1);
-    }
+        //create new midground bird sprite every 900 frames
+        if (frameCount % 900 == 0) {
+            midgroundBird();
+        }
 
-    //create new foreground bird sprite every 800 frames
-    if (frameCount%800 == 0) {
-        foregroundBird();
-    }
+        //create a new MG_fog object every 800 frames and add it to the MG_fogs array
+        if (frameCount % 900 == 0) {
+            let MG_fog1 = new MG_fog(1200, random(-100, -200));
+            append(MG_fogs, MG_fog1);
+        }
 
-    //create a new FG_fog object every 800 frames and add it to the FG_fogs array
-    if (frameCount%800 == 0) {
-        let FG_fog1 = new FG_fog(1200);
-        append(FG_fogs, FG_fog1);
-    }
+        //create a new FGround object every 400 frames and add it to the FGrounds array
+        if (frameCount % 400 == 0) {
+            let FGround1 = new FGround(1200);
+            append(FGrounds, FGround1);
+        }
+
+        //create new foreground bird sprite every 800 frames
+        if (frameCount % 800 == 0) {
+            foregroundBird();
+        }
+
+        //create a new FG_fog object every 800 frames and add it to the FG_fogs array
+        if (frameCount % 800 == 0) {
+            let FG_fog1 = new FG_fog(1200);
+            append(FG_fogs, FG_fog1);
+        }
 
 //=======================================================================================================
 
-    //call show() function for every object in BGrounds array
-    for (let i = 0; i < BGrounds.length; i++) {
-        BGrounds[i].show();
+        //call show() function for every object in BGrounds array
+        for (let i = 0; i < BGrounds.length; i++) {
+            BGrounds[i].show();
+        }
+
+
+        //call show() function for every object in MGrounds array
+        for (let i = 0; i < MGrounds.length; i++) {
+            MGrounds[i].show();
+        }
+
+        //call show() function for every object in MG_fogs array
+        for (let i = 0; i < MG_fogs.length; i++) {
+            MG_fogs[i].show();
+        }
+
+        //call show() function for every object in FGrounds array
+        for (let i = 0; i < FGrounds.length; i++) {
+            FGrounds[i].show();
+        }
+
+        drawSprites();
+
+        //call show() function for every object in FG_fogs array
+        for (let i = 0; i < FG_fogs.length; i++) {
+            FG_fogs[i].show();
+        }
+        if (predictions[0]) {
+            // console.log(predictions);
+            let anno = predictions[0].annotations;
+            // console.log(anno);
+            let X = anno.indexFinger[3][0];
+            let Y = anno.indexFinger[3][1];
+            X = (X / video.width) * W;
+            Y = (Y / video.height) * H;
+            X = W - X;
+            if (preX && preY)
+            {
+                if (Math.abs(preX-X)<=4 || Math.abs(preY-Y)<=4)
+                {
+                    X=preX;
+                    Y=preY;
+                }
+            }
+            console.log(video.width)
+            console.log(X, " ", Y)
+            image(arrow, X, Y, 50, 50)
+            preX=X;
+            preY=Y;
+        }
     }
-
-
-    //call show() function for every object in MGrounds array
-    for (let i = 0; i < MGrounds.length; i++) {
-        MGrounds[i].show();
+    else{
+        let ct;
+        if (frameCount>=10) {
+            let FT=frameCount-10;
+            if (FT<=128) {
+                ct = FT * 2;
+            } else ct = 256 - (FT - 128) * 2;
+            tint(255, ct);
+            /*
+                B01:638*143
+             */
+            image(B01, (W / 2) - 140, 0);
+        }
+       // image(B02,(W/2)-319/2+5,(H/3)-71,319,71)
     }
-
-    //call show() function for every object in MG_fogs array
-    for (let i = 0; i < MG_fogs.length; i++) {
-        MG_fogs[i].show();
-    }
-
-    //call show() function for every object in FGrounds array
-    for (let i = 0; i < FGrounds.length; i++) {
-        FGrounds[i].show();
-    }
-
-    drawSprites();
-
-    //call show() function for every object in FG_fogs array
-    for (let i = 0; i < FG_fogs.length; i++) {
-        FG_fogs[i].show();
-    }
-
     //animation(bird, width/2, height/2);
 
 } //close draw
