@@ -1,7 +1,9 @@
 let video;
 //视频
 let pose;
+let st2;
 let preX,preY;
+let bdx1,bdy1,bdx2,bdy2;
 //存放身体坐标信息
 let skeleton;
 let bird;
@@ -73,9 +75,9 @@ let fog = [fog1, fog2, fog3]; //fog assets
 function preload() { //open preload
     arrow=loadImage('./arrow.webp')
     St=loadImage("./st.png")
+    st2=loadImage("./st2.png")
     B01=loadImage("./b03.png")
     B02=loadImage("./b02.png")
-    console.log(arrow)
     texture = loadImage('https://openprocessing-usercontent.s3.amazonaws.com/files/user237173/visual992149/hd09f8b6836fc950ad871f8806cfda627/BG.png');
     fg[0] = loadImage('https://openprocessing-usercontent.s3.amazonaws.com/files/user237173/visual994970/h55771969c746baea79cf3d0f6aa1787e/FG1.png');
     fg[1] = loadImage('https://openprocessing-usercontent.s3.amazonaws.com/files/user237173/visual994970/h55771969c746baea79cf3d0f6aa1787e/FG2.png');
@@ -183,7 +185,6 @@ function setup() { //open setup
 } //close setup
 
 function draw() { //open draw
-    console.log(frameCount)
     background(texture);
     //background(255);
 
@@ -198,6 +199,10 @@ function draw() { //open draw
           xw/=2;
           xh/=2;
           image(St,W/2-xw/2,H*0.75,xw,xh)
+          bdx1=W/2-xw/2;
+          bdy1=H*0.75;
+          bdx2=bdx1+xw;
+          bdy2=bdy1+xh;
       }
       //  else notint();
 
@@ -287,8 +292,19 @@ function draw() { //open draw
                     Y=preY;
                 }
             }
-            console.log(video.width)
-            console.log(X, " ", Y)
+            if (X>=bdx1 && Y>=bdy1 && X<=bdx2 && Y<=bdy2)
+            {
+                //console.log("in");
+                let xw=st2.width;
+                let xh=st2.height;
+                xw/=2;
+                xh/=2;
+                image(st2,W/2-xw/2,H*0.75,xw,xh)
+              //  bdx1=W/2-xw/2;
+             //   bdy1=H*0.75;
+             //   bdx2=bdx1+xw;
+             //   bdy2=bdy1+xh;
+            }
             image(arrow, X, Y, 50, 50)
             preX=X;
             preY=Y;
