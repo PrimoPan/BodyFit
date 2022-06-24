@@ -3,6 +3,7 @@ let video;
 let pose;
 let AddP;
 let st2;
+let Heart;
 let preX,preY;
 let bdx1,bdy1,bdx2,bdy2;
 //存放身体坐标信息
@@ -81,6 +82,7 @@ function preload() { //open preload
     AgeP=loadImage("./age.png")
     AddP=loadImage("./add-circle 1.png");
     MinP=loadImage("./minus-circle 1.png");
+    Heart=loadImage("./heartrate.png")
     roar = loadSound('https://openprocessing-usercontent.s3.amazonaws.com/files/user237173/visual994970/h55771969c746baea79cf3d0f6aa1787e/roar.mp3');
 } //close preload
 
@@ -90,6 +92,7 @@ modelReady=()=>
     console.log("loaded",predictions);
 }
 var H,W;
+let heartrate=70;
 function setup() { //open setup
 
     H=screen.height;
@@ -122,23 +125,44 @@ function setup() { //open setup
     inputElem.position(W*0.53,H*0.245+3)
     inputElem.size(100);
     inputElem.input(typing);
+    let inputElem2=createInput(heartrate);
+    inputElem2.size(100);
+    inputElem2.position(W*0.53,H*0.37)
+    inputElem2.input(typingage)
     //create first set of objects BEFORE frames start counting
     //ALREADY IN FRAME WHEN INITIALIZED
 
 } //close setup
-var plusX1,plusX2,plusY1,plusY2;
+var plusX1,plusX2,plusY1,plusY2,minX1,minX2,minY1,minY2;
+var plusX3,plusX4,plusY3,plusY4,minX3,minX4,minY4,minY3;
 function draw() { //open draw
     background(texture);
     //background(255);
     image(info,W*0.3,H*0.095)
     image(AgeP,W*0.315,H*0.205)
     image(AddP,W*0.65,H*0.205+20,50,50)
+    image(Heart,W*0.301,H*0.34,150,70)
+    image(AddP,W*0.65,H*0.33+20,50,50)
+    plusX3=W*0.65;
+    plusY3=H*0.33+20;
+    plusX4=plusX3+50;
+    plusY4=plusY3+50;
+    image(MinP,W*0.42,H*0.33+20,50,50)
     plusX1=W*0.65;
     plusY1=H*0.205+20;
     plusX2=plusX1+50;
     plusY2=plusY1+50;
     image(MinP,W*0.42,H*0.205+20,50,50)
-
+    minX1=W*0.42;
+    minY1=H*0.205+20;
+    minX2=minX1+50;
+    minY2=minY1+50;
+    if (age>=120 || age<0)
+    {
+        alert("please input true age");
+        age=50;
+        reload_input();
+    }
 
     /*  if (frameCount>=276) {
           if (frameCount<=340)
@@ -293,6 +317,21 @@ function typing()
     age=this.value();
     console.log("age:",age)
 }
+function typingage()
+{
+    heartrate=this.value();
+}
+function reload_input()
+{
+    let inputElem = createInput(age);
+    inputElem.position(W*0.53,H*0.245+3)
+    inputElem.size(100);
+    inputElem.input(typing);
+    let inputElem2=createInput(heartrate);
+    inputElem2.size(100);
+    inputElem2.position(W*0.53,H*0.37)
+    inputElem2.input(typingage)
+}
 function mouseClicked()
 {
     console.log("click")
@@ -300,12 +339,21 @@ function mouseClicked()
     {
         age++;
         console.log("add ",age)
-        let inputElem = createInput(age);
-        inputElem.position(W*0.53,H*0.245+3)
-        inputElem.size(100);
-        inputElem.input(typing);
+        reload_input();
+    }
+    if (judgeIn(mouseX,mouseY,minX1,minY1,minX2,minY2))
+    {
+        age--;
+        console.log("minus ",age);
+        reload_input();
+    }
+    if (judgeIn(mouseX,mouseY,plusX3,plusY3,plusX4,plusY4))
+    {
+        heartrate++;
+        reload_input();
     }
 }
+
 //=================================================================================
 
 //
