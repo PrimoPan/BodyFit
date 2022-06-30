@@ -133,10 +133,10 @@ function draw() { //open draw
         image(p01_1,W*0.19,H*0.14)
     }
     image(kj,W*0.5,H/9);
-    image(p04,W*0.51,H*0.14);
+    image(p04,W*0.505,H*0.14);
     if (judgeIn(mouseX,mouseY,kj4x1,kj4y1,kj4x2,kj4y2))
     {
-        image(p04_1,W*0.51,H*0.14)
+        image(p04_1,W*0.505,H*0.14)
     }
     image(kj,W*0.18,H*0.3)
     kj2x1=W*0.18;kj2y1=H*0.3;

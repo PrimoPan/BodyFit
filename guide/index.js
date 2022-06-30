@@ -148,6 +148,10 @@ function draw() { //open draw
     plusX4=plusX3+50;
     plusY4=plusY3+50;
     image(MinP,W*0.42,H*0.33+20,50,50)
+    minX3=W*0.42;
+    minY3=H*0.33+20;
+    minX4=minX3+50;
+    minY4=minY3+50;
     plusX1=W*0.65;
     plusY1=H*0.205+20;
     plusX2=plusX1+50;
@@ -350,6 +354,11 @@ function mouseClicked()
     if (judgeIn(mouseX,mouseY,plusX3,plusY3,plusX4,plusY4))
     {
         heartrate++;
+        reload_input();
+    }
+    if (judgeIn(mouseX,mouseY,minX3,minY3,minX4,minY4))
+    {
+        heartrate--;
         reload_input();
     }
 }

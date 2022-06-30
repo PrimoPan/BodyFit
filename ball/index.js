@@ -3,6 +3,7 @@ let video;
 let pose;
 let AddP;
 let st2;
+let balll;
 let Heart;
 let preX,preY;
 let bdx1,bdy1,bdx2,bdy2;
@@ -17,7 +18,6 @@ let B01,B02;
 let predictions=[];
 let ave;
 let smile;
-let taichi;
 modelLoaded=()=>
 {
     console.log("model ready")
@@ -39,10 +39,8 @@ let music1;
 let music2;
 let music3;
 let ambience;
-let svg;
 let roar;
-let p01;
-
+var LeftW,RightW;
 let musicList = [music1, music2, music3];
 
 //define object arrays
@@ -51,8 +49,10 @@ let musicList = [music1, music2, music3];
 //canvas paper texture
 let texture;
 let tvideo;
+let taichi;
 //foreground
 //preloading png files
+var bb;
 function preload() { //open preload
     texture = loadImage('https://openprocessing-usercontent.s3.amazonaws.com/files/user237173/visual992149/hd09f8b6836fc950ad871f8806cfda627/BG.png');
     music1 = loadSound('https://openprocessing-usercontent.s3.amazonaws.com/files/user237173/visual994970/h55771969c746baea79cf3d0f6aa1787e/mus1.mp3');
@@ -62,7 +62,7 @@ function preload() { //open preload
     roar = loadSound('https://openprocessing-usercontent.s3.amazonaws.com/files/user237173/visual994970/h55771969c746baea79cf3d0f6aa1787e/roar.mp3');
 
 } //close preload
-let cry;
+
 //====================================================================================
 modelReady=()=>
 {
@@ -71,16 +71,12 @@ modelReady=()=>
 var H,W;
 let heartrate=70;
 function setup() { //open setup
-    ave=loadImage("./ave.svg")
-    svg=loadImage("./test.svg")
-    cry=loadImage("./cry.svg")
-    smile=loadImage("./smile.svg")
-    p01=loadImage("./001.png")
+    balll=loadImage("ball.jpg")
     H=screen.height;
     W=screen.width;
+    taichi=loadImage("./taichi.png")
     createCanvas(W, H);
     video=createCapture(VIDEO)
-    taichi=loadImage("./taichi.png")
     // video.size(W,H)
     translate(video.width,0)
     scale(-1,1)
@@ -94,17 +90,9 @@ function setup() { //open setup
         //  console.log(predictions)
     })
     //playMusic();
+     bb=new Ballup(0,200);
 
-    music3.setLoop(true);
-    music3.setVolume(0.1);
-    music3.play();
-    smile=loadImage("./smile.svg")
-    ambience.setLoop(true);
-    ambience.setVolume(0.3);
-    ambience.play();
-    tvideo=createVideo("./taichi.mp4")
-    tvideo.position(W*0.6,H/5)
-    tvideo.size(720)
+
     //create first set of objects BEFORE frames start counting
     //ALREADY IN FRAME WHEN INITIALIZED
 
@@ -113,32 +101,48 @@ function setup() { //open setup
 function draw() { //open draw
     background(texture);
 
-    image(svg,50,0)
-    image(p01,500,73)
-    image(taichi,10,-70)
-    image(video,200,H/5,649,720)
-  //  image(ave, W*0.45, H*0.4);
-    let X=W*0.45;
-    let Y=H*0.4;
-    if (frameCount>=350 && frameCount<=470) {
-        image(ave, X, Y);
-    }
-    if (frameCount>=510 && frameCount<=740)
+        // console.log(predictions);
+    if (pose)
     {
-        image(smile,X,Y)
+
+        if (frameCount%5==0) {
+            //console.log(pose)
+            LeftW = pose.leftWrist;
+            console.log(LeftW);
+            LeftW.x = (LeftW.x / video.width) * W;
+            LeftW.y = (LeftW.y / video.height) * H;
+            LeftW.x = W - LeftW.x;
+            RightW = pose.rightWrist;
+            RightW.x = (RightW.x / video.width) * W;
+            RightW.y = (RightW.y / video.height) * H;
+            RightW.x = W - RightW.x;
+            image(taichi, LeftW.x, LeftW.y);
+            image(taichi, RightW.x, RightW.y)
+        }
+        else{
+            if (LeftW && RightW){
+            image(taichi, LeftW.x, LeftW.y);
+            image(taichi, RightW.x, RightW.y)}
+        }
     }
-    if (frameCount>=790 && frameCount<=950)
-    {
-        image(cry,X,Y)
-    }
-    if (frameCount>=970 && frameCount<=1400)
-    {
-        image(smile,X,Y)
-    }
-    //image(smile,270,330);
+     bb.show();
+
 } //close draw
 function mouseClicked()
 {
     tvideo.play();
 
+}
+class Ballup{
+    constructor(x, y)
+    {
+        this.x = x;
+        this.y = y;
+        this.speed=5;
+    }
+    show()
+    {
+        image(balll,this.x,this.y)
+        this.x+=this.speed;
+    }
 }
