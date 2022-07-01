@@ -10,6 +10,7 @@ let bdx1,bdy1,bdx2,bdy2;
 //存放身体坐标信息
 let skeleton;
 let bird;
+let score=0;
 let handpose;
 let arrow;
 var age=50;
@@ -40,6 +41,10 @@ let music2;
 let music3;
 let ambience;
 let roar;
+let LUball=[];
+let RUball=[];
+let LDball=[];
+let RDball=[];
 var LeftW,RightW;
 let musicList = [music1, music2, music3];
 
@@ -90,24 +95,30 @@ function setup() { //open setup
         //  console.log(predictions)
     })
     //playMusic();
-     bb=new Ballup(0,200);
 
 
     //create first set of objects BEFORE frames start counting
     //ALREADY IN FRAME WHEN INITIALIZED
 
 } //close setup
-
+var LeftK,RightK;
 function draw() { //open draw
     background(texture);
-
+    textSize(128);
+    text('得分：', W/3+128, H/2);
+    text(score,W/3+128*3+128,H/2);
+    fill(0, 102, 153);
         // console.log(predictions);
     if (pose)
     {
 
         if (frameCount%5==0) {
-            //console.log(pose)
+            console.log(pose)
             LeftW = pose.leftWrist;
+            LeftK=pose.leftKnee;
+            LeftK.x=(LeftK.x/video.width)*W;
+            LeftK.y=(LeftK.y/video.height)*H;
+            LeftK.x=W-LeftK.x;
             console.log(LeftW);
             LeftW.x = (LeftW.x / video.width) * W;
             LeftW.y = (LeftW.y / video.height) * H;
@@ -116,17 +127,62 @@ function draw() { //open draw
             RightW.x = (RightW.x / video.width) * W;
             RightW.y = (RightW.y / video.height) * H;
             RightW.x = W - RightW.x;
+            RightK=pose.rightKnee;
+            RightK.x=(RightK.x/video.width)*W;
+            RightK.y=(RightK.y/video.height)*H;
+            RightK.x=W-RightK.x;
             image(taichi, LeftW.x, LeftW.y);
             image(taichi, RightW.x, RightW.y)
+            image(taichi,RightK.x,RightK.y);
+            image(taichi,LeftK.x,LeftK.y);
         }
         else{
-            if (LeftW && RightW){
+            if (LeftW && RightW && RightK && LeftK){
             image(taichi, LeftW.x, LeftW.y);
-            image(taichi, RightW.x, RightW.y)}
+            image(taichi, RightW.x, RightW.y)
+                image(taichi,RightK.x,RightK.y);
+                image(taichi,LeftK.x,LeftK.y);}
+        }
+        if (frameCount%80==0)
+        {
+             let rd=Math.floor(Math.random()*5);
+             if (rd===0) {
+                 let nb = new Ballup(0, 100);
+                 append(LUball, nb);
+             }
+             if (rd===1)
+             {
+                 let nb=new Ballrt(W,100);
+                 append(RUball,nb);
+             }
+             if (rd===2)
+             {
+                 let nb=new Ballup(0,H*0.6);
+                 append(LDball,nb)
+             }
+             if (rd===3)
+             {
+                 let nb=new Ballrt(W,H*0.6)
+                 append(RDball,nb)
+             }
         }
     }
-     bb.show();
-
+    for (let i=0;i<LUball.length;i++)
+    {
+        LUball[i].show();
+    }
+    for (let i=0;i<RUball.length;i++)
+    {
+        RUball[i].show();
+    }
+    for (let i=0;i<LDball.length;i++)
+    {
+        LDball[i].show();
+    }
+    for (let i=0;i<RDball.length;i++)
+    {
+        RDball[i].show();
+    }
 } //close draw
 function mouseClicked()
 {
@@ -139,10 +195,49 @@ class Ballup{
         this.x = x;
         this.y = y;
         this.speed=5;
+        this.bol=true;
     }
     show()
     {
-        image(balll,this.x,this.y)
-        this.x+=this.speed;
+        if (this.bol) {
+            image(balll, this.x, this.y)
+            this.x += this.speed;
+            if (dist(this.x, this.y, LeftW.x, LeftW.y) <= 30 || dist(this.x, this.y, RightW.x, RightW.y) <= 30) {
+                this.x = 100000;
+                score+=10;
+                this.bol=false;
+            }
+            if (dist(this.x,this.y,LeftK.x,LeftK.y)<=40 || dist(this.x,this.y,RightK.x,RightK.y)<=40){
+                this.x=100000;
+                score+=20;
+                this.bol=false;
+            }
+        }
+    }
+}
+class Ballrt{
+    constructor(x,y) {
+        this.x=x;
+        this.y=y;
+        this.speed=5;
+
+        this.bol=true;
+    }
+    show()
+    {
+        if (this.bol) {
+            image(balll, this.x, this.y)
+            this.x -= this.speed;
+            if (dist(this.x, this.y, LeftW.x, LeftW.y) <= 30 || dist(this.x, this.y, RightW.x, RightW.y) <= 30) {
+                this.x = 100000;
+                score+=10;
+                this.bol = false;
+            }
+            if (dist(this.x,this.y,LeftK.x,LeftK.y)<=40 || dist(this.x,this.y,RightK.x,RightK.y)<=40){
+                this.x=100000;
+                score+=20;
+                this.bol=false;
+            }
+        }
     }
 }
